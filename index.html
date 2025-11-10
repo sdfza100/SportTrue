@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Football Jersey Designer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="designer-container">
+        <div id="canvas-area">
+            <canvas id="jerseyCanvas" width="600" height="700"></canvas>
+            <div id="logo-controls"></div> 
+        </div>
+
+        <div id="controls-area">
+            <h1>Football Jersey Designer</h1>
+            <section id="design-options">
+                <h2>1. ตัวเสื้อและคอเสื้อ</h2>
+                <label for="collar-style">คอเสื้อ:</label>
+                <select id="collar-style">
+                    <option value="round">คอกลม</option>
+                    <option value="vneck">คอวี</option>
+                    <option value="polo">คอปกโปโล</option>
+                    <option value="mandarin">คอปกจีน/ตั้ง</option>
+                </select>
+
+                <label for="pattern-style">ลายเสื้อ:</label>
+                <select id="pattern-style">
+                    <option value="solid">สีพื้น</option>
+                    <option value="stripes">ลายทาง</option>
+                    <option value="checkered">ลายตาราง</option>
+                    <option value="digital">ลายดิจิทัล</option>
+                </select>
+            </section>
+
+            <section id="color-picker-section">
+                <h2>2. การเลือกสี</h2>
+                <div class="color-control">
+                    <label for="body-color">สีตัวเสื้อหลัก:</label>
+                    <input type="color" id="body-color" value="#FFFFFF">
+                </div>
+                <div class="color-control">
+                    <label for="pattern-color">สีลาย/ขอบ:</label>
+                    <input type="color" id="pattern-color" value="#FF0000">
+                </div>
+                <div class="color-control">
+                    <label for="collar-color">สีคอเสื้อ:</label>
+                    <input type="color" id="collar-color" value="#0000FF">
+                </div>
+            </section>
+            
+            <section id="name-number-section">
+                <h2>3. ชื่อและหมายเลข</h2>
+                <input type="text" id="player-name" placeholder="ชื่อผู้เล่น (ด้านหลัง)">
+                <input type="number" id="player-number" placeholder="หมายเลข">
+
+                <div class="color-control">
+                    <label for="text-color">สีตัวอักษร:</label>
+                    <input type="color" id="text-color" value="#000000">
+                </div>
+
+                <label for="font-upload">อัปโหลดฟอนต์ (.ttf/.otf):</label>
+                <input type="file" id="font-upload" accept=".ttf,.otf">
+                <select id="current-font">
+                    <option value="Arial">Arial (Default)</option>
+                    </select>
+            </section>
+
+            <section id="logo-upload-section">
+                <h2>4. โลโก้</h2>
+                <input type="file" id="logo-upload" accept="image/png, image/jpeg">
+            </section>
+
+            <button id="download-btn">ดาวน์โหลด PNG</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
