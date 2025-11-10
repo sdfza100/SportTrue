@@ -33,7 +33,7 @@
                     <option value="checkered">ลายตาราง</option>
                 </select>
             </section>
-
+            
             <section>
                 <h3>2. การเลือกสี</h3>
                 <div class="color-control"><label for="body-color">สีตัวเสื้อหลัก:</label><input type="color" id="body-color" value="#FFFFFF"></div>
@@ -48,6 +48,19 @@
 
                 <div class="color-control"><label for="text-color">สีตัวอักษร:</label><input type="color" id="text-color" value="#000000"></div>
 
+                <h4>ตำแหน่งและขนาดข้อความ (พิกเซล)</h4>
+                <label for="number-y">ตำแหน่งเบอร์ (Y):</label>
+                <input type="number" id="number-y" value="450" min="50" max="650"> 
+                
+                <label for="number-size">ขนาดเบอร์:</label>
+                <input type="number" id="number-size" value="120" min="10" max="200">
+                
+                <label for="name-y">ตำแหน่งชื่อ (Y):</label>
+                <input type="number" id="name-y" value="380" min="50" max="650">
+
+                <label for="name-size">ขนาดชื่อ:</label>
+                <input type="number" id="name-size" value="35" min="10" max="100">
+                
                 <label for="font-upload">อัปโหลดฟอนต์ (.ttf/.otf):</label>
                 <input type="file" id="font-upload" accept=".ttf,.otf">
                 <select id="current-font">
@@ -55,33 +68,7 @@
                     <option value="Verdana">Verdana</option>
                 </select>
             </section>
-<section>
-    <h3>3. ชื่อและหมายเลข</h3>
-    <input type="text" id="player-name" placeholder="ชื่อผู้เล่น (เช่น: GEMINI)" maxlength="15">
-    <input type="number" id="player-number" placeholder="หมายเลข (เช่น: 10)" max="99">
 
-    <div class="color-control"><label for="text-color">สีตัวอักษร:</label><input type="color" id="text-color" value="#000000"></div>
-
-    <h4>ตำแหน่งและขนาดข้อความ (พิกเซล)</h4>
-    <label for="number-y">ตำแหน่งเบอร์ (Y):</label>
-    <input type="number" id="number-y" value="450" min="50" max="650"> 
-    
-    <label for="number-size">ขนาดเบอร์:</label>
-    <input type="number" id="number-size" value="120" min="10" max="200">
-    
-    <label for="name-y">ตำแหน่งชื่อ (Y):</label>
-    <input type="number" id="name-y" value="380" min="50" max="650">
-
-    <label for="name-size">ขนาดชื่อ:</label>
-    <input type="number" id="name-size" value="35" min="10" max="100">
-    
-    <label for="font-upload">อัปโหลดฟอนต์ (.ttf/.otf):</label>
-    <input type="file" id="font-upload" accept=".ttf,.otf">
-    <select id="current-font">
-        <option value="Arial">Arial (Default)</option>
-        <option value="Verdana">Verdana</option>
-    </select>
-</section>
             <section>
                 <h3>4. อัปโหลดโลโก้</h3>
                 <input type="file" id="logo-upload" accept="image/png, image/jpeg">
