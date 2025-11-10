@@ -1,9 +1,8 @@
-// script.js (ฉบับสมบูรณ์และแก้ไขแล้ว)
+// script.js (ฉบับสมบูรณ์และแก้ไขล่าสุด)
 const canvas = document.getElementById('jerseyCanvas');
 // ตรวจสอบความพร้อมของ Canvas
 if (!canvas) {
     console.error("Canvas element not found!");
-    // สิ้นสุดการทำงานถ้าหา Canvas ไม่พบ
     throw new Error("Canvas element 'jerseyCanvas' is missing from index.html."); 
 }
 
@@ -13,12 +12,15 @@ const H = canvas.height;
 const CENTER_X = W / 2;
 const BASE_Y = 50; 
 
-// State Object
+// State Object (ปรับค่าเริ่มต้นสำหรับเสื้อโปโลลายกราฟิก)
 let jerseyState = {
-    collar: 'round',
-    pattern: 'solid',
+    collar: 'polo', // <-- ตั้งค่าเริ่มต้นเป็นคอปกโปโล
+    pattern: 'graphic', // <-- ตั้งค่าเริ่มต้นเป็นลายกราฟิกใหม่
     colors: {
-        body: '#FFFFFF', pattern: '#0056A8', collar: '#CC0000', text: '#000000'
+        body: '#FFFFFF',          // สีพื้นขาว
+        pattern: '#0056A8',       // สีน้ำเงินเข้มสำหรับลายหลัก
+        collar: '#34A0FF',        // สีฟ้าอ่อนสำหรับคอปก
+        text: '#000000'
     },
     text: { name: 'GEMINI', number: '10' },
     textProps: {
@@ -27,41 +29,29 @@ let jerseyState = {
         x: CENTER_X 
     },
     logo: null,
-    // เพิ่ม isResizing สำหรับการรองรับการปรับขนาดในอนาคต (ไม่ได้ถูก implement ใน Drag logic นี้)
     logoProps: { x: CENTER_X - 50, y: 150, width: 100, height: 100, isDragging: false, isResizing: false, offset: { x: 0, y: 0 } },
     customFont: 'Arial'
 };
 
 // --- ฟังก์ชันการวาดหลัก (Core Drawing Functions) ---
 
-/** วาดรูปร่างเสื้อหลัก (Path ถูกปรับปรุงให้เป็นรูปเสื้อกีฬา) */
+/** วาดรูปร่างเสื้อหลัก */
 function drawBodyShape(ctx, color) {
     ctx.fillStyle = color;
     const bodyPath = new Path2D();
     
-    // 1. จุดเริ่มต้น: คอเสื้อด้านซ้าย
     bodyPath.moveTo(CENTER_X - 60, BASE_Y + 30); 
-    
-    // 2. ไหล่ซ้ายและแขน
     bodyPath.bezierCurveTo(
         CENTER_X - 160, BASE_Y - 10,      
         CENTER_X - 220, BASE_Y + 120,    
-        CENTER_X - 180, BASE_Y + 220     
+        CENTER_X - 180, BASE_Y + 220      
     );
-    
-    // 3. ด้านข้างซ้าย
     bodyPath.lineTo(CENTER_X - 140, H - 100); 
-
-    // 4. ชายเสื้อด้านล่าง (โค้งมน)
     bodyPath.quadraticCurveTo(
         CENTER_X, H - 80, 
         CENTER_X + 140, H - 100 
     );
-    
-    // 5. ด้านข้างขวา
     bodyPath.lineTo(CENTER_X + 180, BASE_Y + 220);
-
-    // 6. แขนขวาและไหล่
     bodyPath.bezierCurveTo(
         CENTER_X + 220, BASE_Y + 120, 
         CENTER_X + 160, BASE_Y - 10,      
@@ -73,7 +63,7 @@ function drawBodyShape(ctx, color) {
     return bodyPath;
 }
 
-/** วาดลวดลายบนตัวเสื้อ */
+/** วาดลวดลายบนตัวเสื้อ (เพิ่มลาย 'graphic') */
 function drawPattern(ctx, patternStyle, patternColor, bodyPath) {
     if (patternStyle === 'solid') return;
 
@@ -96,7 +86,36 @@ function drawPattern(ctx, patternStyle, patternColor, bodyPath) {
                 }
             }
         }
+    } else if (patternStyle === 'graphic') { // <-- ลายกราฟิกแบบ Sublimation จำลอง
+        const graphicWidth = 100;
+        const offset = 20;
+        const secondaryColor = '#34A0FF'; // สีฟ้าอ่อน
+
+        // แถบแนวตั้งด้านซ้าย (สีหลัก)
+        ctx.fillStyle = patternColor;
+        ctx.fillRect(CENTER_X - graphicWidth - offset, BASE_Y, graphicWidth, H);
+        
+        // แถบแนวตั้งด้านขวา (สีหลัก)
+        ctx.fillRect(CENTER_X + offset, BASE_Y, graphicWidth, H);
+
+        // สามเหลี่ยมตัดขวาง (จำลองลายกราฟิก)
+        ctx.fillStyle = secondaryColor;
+        
+        ctx.beginPath();
+        // สามเหลี่ยมด้านซ้าย
+        ctx.moveTo(CENTER_X - graphicWidth - offset, BASE_Y);
+        ctx.lineTo(CENTER_X - offset, BASE_Y + 100);
+        ctx.lineTo(CENTER_X - graphicWidth - offset, BASE_Y + 150);
+        ctx.fill();
+
+        ctx.beginPath();
+        // สามเหลี่ยมด้านขวา
+        ctx.moveTo(CENTER_X + offset, BASE_Y + 50);
+        ctx.lineTo(CENTER_X + graphicWidth + offset, BASE_Y + 150);
+        ctx.lineTo(CENTER_X + graphicWidth + offset, BASE_Y + 50);
+        ctx.fill();
     }
+    
     ctx.restore();
 }
 
@@ -171,7 +190,6 @@ function drawJersey() {
 
 /** อัปเดต State จาก UI และเรียกวาดใหม่ */
 function updateStateAndRedraw() {
-    // UI Controls: ดึงค่าจาก HTML elements
     jerseyState.collar = document.getElementById('collar-style').value;
     jerseyState.pattern = document.getElementById('pattern-style').value;
     jerseyState.colors.body = document.getElementById('body-color').value;
@@ -182,8 +200,7 @@ function updateStateAndRedraw() {
     jerseyState.text.number = document.getElementById('player-number').value;
     jerseyState.customFont = document.getElementById('current-font').value;
 
-    // อัปเดตตำแหน่งและขนาดจาก Input ใหม่ (ต้องมีใน index.html)
-    // ใช้ || ค่าเริ่มต้น หากหา element ไม่เจอหรือค่าว่าง
+    // ต้องใช้ ?.value เพื่อจัดการเมื่อ element ยังไม่โหลด (หรือกรณีที่แก้ไข HTML ไม่สมบูรณ์)
     jerseyState.textProps.number.y = parseInt(document.getElementById('number-y')?.value) || H - 250;
     jerseyState.textProps.number.size = parseInt(document.getElementById('number-size')?.value) || 120;
     jerseyState.textProps.name.y = parseInt(document.getElementById('name-y')?.value) || H - 320;
@@ -201,7 +218,6 @@ function handleLogoUpload(event) {
             const img = new Image();
             img.onload = () => {
                 jerseyState.logo = img;
-                // ตั้งขนาดเริ่มต้น
                 jerseyState.logoProps.width = 100; 
                 jerseyState.logoProps.height = (100 / img.width) * img.height; 
                 drawJersey();
