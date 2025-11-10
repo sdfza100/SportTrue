@@ -10,13 +10,14 @@
     <div id="designer-container">
         <div id="canvas-area">
             <canvas id="jerseyCanvas" width="600" height="700"></canvas>
-            <div id="logo-controls"></div> 
+            <p style="text-align: center; margin-top: 10px; font-style: italic;">(คลิกและลากโลโก้เพื่อย้ายตำแหน่ง)</p>
         </div>
 
         <div id="controls-area">
-            <h1>Football Jersey Designer</h1>
-            <section id="design-options">
-                <h2>1. ตัวเสื้อและคอเสื้อ</h2>
+            <h1>👕 ออกแบบเสื้อฟุตบอลของคุณ</h1>
+
+            <section>
+                <h3>1. ตัวเสื้อและคอเสื้อ</h3>
                 <label for="collar-style">คอเสื้อ:</label>
                 <select id="collar-style">
                     <option value="round">คอกลม</option>
@@ -30,49 +31,37 @@
                     <option value="solid">สีพื้น</option>
                     <option value="stripes">ลายทาง</option>
                     <option value="checkered">ลายตาราง</option>
-                    <option value="digital">ลายดิจิทัล</option>
                 </select>
             </section>
 
-            <section id="color-picker-section">
-                <h2>2. การเลือกสี</h2>
-                <div class="color-control">
-                    <label for="body-color">สีตัวเสื้อหลัก:</label>
-                    <input type="color" id="body-color" value="#FFFFFF">
-                </div>
-                <div class="color-control">
-                    <label for="pattern-color">สีลาย/ขอบ:</label>
-                    <input type="color" id="pattern-color" value="#FF0000">
-                </div>
-                <div class="color-control">
-                    <label for="collar-color">สีคอเสื้อ:</label>
-                    <input type="color" id="collar-color" value="#0000FF">
-                </div>
+            <section>
+                <h3>2. การเลือกสี</h3>
+                <div class="color-control"><label for="body-color">สีตัวเสื้อหลัก:</label><input type="color" id="body-color" value="#FFFFFF"></div>
+                <div class="color-control"><label for="pattern-color">สีลาย/ขอบ:</label><input type="color" id="pattern-color" value="#0056A8"></div>
+                <div class="color-control"><label for="collar-color">สีคอเสื้อ:</label><input type="color" id="collar-color" value="#CC0000"></div>
             </section>
             
-            <section id="name-number-section">
-                <h2>3. ชื่อและหมายเลข</h2>
-                <input type="text" id="player-name" placeholder="ชื่อผู้เล่น (ด้านหลัง)">
-                <input type="number" id="player-number" placeholder="หมายเลข">
+            <section>
+                <h3>3. ชื่อและหมายเลข</h3>
+                <input type="text" id="player-name" placeholder="ชื่อผู้เล่น (เช่น: GEMINI)" maxlength="15">
+                <input type="number" id="player-number" placeholder="หมายเลข (เช่น: 10)" max="99">
 
-                <div class="color-control">
-                    <label for="text-color">สีตัวอักษร:</label>
-                    <input type="color" id="text-color" value="#000000">
-                </div>
+                <div class="color-control"><label for="text-color">สีตัวอักษร:</label><input type="color" id="text-color" value="#000000"></div>
 
                 <label for="font-upload">อัปโหลดฟอนต์ (.ttf/.otf):</label>
                 <input type="file" id="font-upload" accept=".ttf,.otf">
                 <select id="current-font">
                     <option value="Arial">Arial (Default)</option>
-                    </select>
+                    <option value="Verdana">Verdana</option>
+                </select>
             </section>
 
-            <section id="logo-upload-section">
-                <h2>4. โลโก้</h2>
+            <section>
+                <h3>4. อัปโหลดโลโก้</h3>
                 <input type="file" id="logo-upload" accept="image/png, image/jpeg">
             </section>
 
-            <button id="download-btn">ดาวน์โหลด PNG</button>
+            <button id="download-btn">⬇️ ดาวน์โหลด PNG</button>
         </div>
     </div>
     <script src="script.js"></script>
