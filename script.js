@@ -29,28 +29,24 @@ let jerseyState = {
     textProps: {
         name: { size: 35, y: H - 320 },
         number: { size: 120, y: H - 250 },
-        x: 0 // X-coordinate จะถูกกำหนดโดย OFFSET ใน drawJersey
+        x: 0 // X-coordinate ถูกกำหนดโดย OFFSET
     },
     logo: null,
-    // ตำแหน่งโลโก้จะสัมพันธ์กับจุดศูนย์กลางของเสื้อด้านหน้าเท่านั้น
-    logoProps: { x: 0, y: 150, width: 100, height: 100, isDragging: false, isResizing: false, offset: { x: 0, y: 0 } },
+    // x, y ที่นี่คือตำแหน่งสัมพัทธ์ (Relative) ภายในพื้นที่เสื้อด้านหน้า
+    logoProps: { x: 50, y: 150, width: 100, height: 100, isDragging: false, offset: { x: 0, y: 0 } },
     customFont: 'Arial'
 };
 
 // --- ฟังก์ชันการวาดหลัก (Core Drawing Functions) ---
 
 /** วาดรูปร่างเสื้อหลัก (ปรับ Path ให้รับ offsetX) */
-function drawBodyShape(ctx, color, offsetX) { // <--- เพิ่ม offsetX
+function drawBodyShape(ctx, color, offsetX) {
     ctx.fillStyle = color;
     const bodyPath = new Path2D();
     
-    // พิกัดทั้งหมดจะถูกเลื่อนด้วย offsetX
     const X = offsetX; 
     
-    // 1. จุดเริ่มต้น: คอเสื้อด้านซ้าย
     bodyPath.moveTo(X - 60, BASE_Y + 30); 
-    
-    // 2. ไหล่ซ้ายและแขน
     bodyPath.bezierCurveTo(
         X - 160, BASE_Y - 10,      
         X - 220, BASE_Y + 120,    
@@ -74,15 +70,13 @@ function drawBodyShape(ctx, color, offsetX) { // <--- เพิ่ม offsetX
 }
 
 /** วาดลวดลายบนตัวเสื้อ (ปรับให้รับ offsetX) */
-function drawPattern(ctx, patternStyle, patternColor, bodyPath, offsetX) { // <--- เพิ่ม offsetX
+function drawPattern(ctx, patternStyle, patternColor, bodyPath, offsetX) {
     if (patternStyle === 'solid') return;
 
     ctx.save();
     ctx.clip(bodyPath); 
     ctx.fillStyle = patternColor;
     const X = offsetX;
-    
-    // NOTE: พิกัดในลายต้องสัมพันธ์กับ X (CENTER_X ของเสื้อแต่ละตัว)
 
     if (patternStyle === 'stripes') {
         const stripeWidth = 20;
@@ -99,30 +93,24 @@ function drawPattern(ctx, patternStyle, patternColor, bodyPath, offsetX) { // <-
                 }
             }
         }
-    } else if (patternStyle === 'graphic') { 
+    } else if (patternStyle === 'graphic') {
         const graphicWidth = 100;
         const offset = 20;
         const secondaryColor = '#34A0FF'; 
 
-        // แถบแนวตั้งด้านซ้าย (สีหลัก)
         ctx.fillStyle = patternColor;
         ctx.fillRect(X - graphicWidth - offset, BASE_Y, graphicWidth, H);
-        
-        // แถบแนวตั้งด้านขวา (สีหลัก)
         ctx.fillRect(X + offset, BASE_Y, graphicWidth, H);
 
-        // สามเหลี่ยมตัดขวาง (จำลองลายกราฟิก)
         ctx.fillStyle = secondaryColor;
         
         ctx.beginPath();
-        // สามเหลี่ยมด้านซ้าย
         ctx.moveTo(X - graphicWidth - offset, BASE_Y);
         ctx.lineTo(X - offset, BASE_Y + 100);
         ctx.lineTo(X - graphicWidth - offset, BASE_Y + 150);
         ctx.fill();
 
         ctx.beginPath();
-        // สามเหลี่ยมด้านขวา
         ctx.moveTo(X + offset, BASE_Y + 50);
         ctx.lineTo(X + graphicWidth + offset, BASE_Y + 150);
         ctx.lineTo(X + graphicWidth + offset, BASE_Y + 50);
@@ -133,11 +121,11 @@ function drawPattern(ctx, patternStyle, patternColor, bodyPath, offsetX) { // <-
 }
 
 /** วาดคอเสื้อ 4 แบบ (ปรับให้รับ offsetX) */
-function drawCollar(ctx, style, color, offsetX) { // <--- เพิ่ม offsetX
+function drawCollar(ctx, style, color, offsetX) {
     ctx.fillStyle = color;
     const neckTopY = BASE_Y + 30;
     const neckWidth = 60; 
-    const X = offsetX; // ใช้ X ที่มีการเลื่อน
+    const X = offsetX;
 
     ctx.beginPath();
     
@@ -168,7 +156,7 @@ function drawCollar(ctx, style, color, offsetX) { // <--- เพิ่ม offset
 }
 
 /** วาดชื่อและหมายเลข (ปรับให้รับ offsetX และ isBackView) */
-function drawText(ctx, textState, textColor, fontName, textProps, offsetX, isBackView) { // <--- เพิ่ม offsetX, isBackView
+function drawText(ctx, textState, textColor, fontName, textProps, offsetX, isBackView) {
     ctx.fillStyle = textColor;
     ctx.textAlign = 'center';
     
@@ -176,7 +164,6 @@ function drawText(ctx, textState, textColor, fontName, textProps, offsetX, isBac
 
     if (isBackView) {
         // --- มุมมองด้านหลัง: ชื่อและเบอร์ขนาดใหญ่ ---
-        
         ctx.font = `bold ${textProps.number.size}px ${fontName}, sans-serif`; 
         ctx.fillText(textState.number, X, textProps.number.y);
         
@@ -190,13 +177,12 @@ function drawText(ctx, textState, textColor, fontName, textProps, offsetX, isBac
 }
 
 /** วาดโลโก้ (ปรับให้รับ offsetX และใช้ตำแหน่งที่ผู้ใช้กำหนด) */
-function drawLogo(ctx, logo, props, offsetX) { // <--- เพิ่ม offsetX
+function drawLogo(ctx, logo, props, offsetX) {
     if (logo) {
-        // ตำแหน่งโลโก้ถูกกำหนดโดยผู้ใช้เทียบกับจุดศูนย์กลางของเสื้อด้านหน้า
-        // FRONT_OFFSET (150) - CANVAS_CENTER (300) = -150
-        // เราต้องชดเชยค่านี้เมื่อวาด
-        const adjustedX = props.x + (offsetX - SHIRT_CENTER_OFFSET);
-        ctx.drawImage(logo, adjustedX, props.y, props.width, props.height);
+        // ตำแหน่งโลโก้ถูกกำหนดโดยผู้ใช้เทียบกับจุดศูนย์กลางของเสื้อด้านหน้า (X=150)
+        // ถ้า props.x = 50, โลโก้จะถูกวาดที่ 150 - (150-50) = 50 
+        const logoDrawX = offsetX - SHIRT_CENTER_OFFSET + props.x;
+        ctx.drawImage(logo, logoDrawX, props.y, props.width, props.height);
     }
 }
 
@@ -243,12 +229,85 @@ function drawJersey() {
     ctx.stroke();
 }
 
-// ... (โค้ด updateStateAndRedraw, handleLogoUpload, handleFontUpload, downloadJersey เดิม) ...
+/** อัปเดต State จาก UI และเรียกวาดใหม่ */
+function updateStateAndRedraw() {
+    jerseyState.collar = document.getElementById('collar-style').value;
+    jerseyState.pattern = document.getElementById('pattern-style').value;
+    jerseyState.colors.body = document.getElementById('body-color').value;
+    jerseyState.colors.pattern = document.getElementById('pattern-color').value;
+    jerseyState.colors.collar = document.getElementById('collar-color').value;
+    jerseyState.colors.text = document.getElementById('text-color').value;
+    jerseyState.text.name = document.getElementById('player-name').value.toUpperCase();
+    jerseyState.text.number = document.getElementById('player-number').value;
+    jerseyState.customFont = document.getElementById('current-font').value;
+
+    // ต้องใช้ ?.value เพื่อจัดการเมื่อ element ยังไม่โหลด (หรือกรณีที่แก้ไข HTML ไม่สมบูรณ์)
+    jerseyState.textProps.number.y = parseInt(document.getElementById('number-y')?.value) || H - 250;
+    jerseyState.textProps.number.size = parseInt(document.getElementById('number-size')?.value) || 120;
+    jerseyState.textProps.name.y = parseInt(document.getElementById('name-y')?.value) || H - 320;
+    jerseyState.textProps.name.size = parseInt(document.getElementById('name-size')?.value) || 35;
+    
+    drawJersey();
+}
+
+/** จัดการการอัปโหลดโลโก้ */
+function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                jerseyState.logo = img;
+                jerseyState.logoProps.width = 100; 
+                jerseyState.logoProps.height = (100 / img.width) * img.height; 
+                // ตั้งตำแหน่งเริ่มต้นให้อยู่ตรงกลางเสื้อด้านหน้า
+                jerseyState.logoProps.x = FRONT_CENTER_X - (jerseyState.logoProps.width / 2);
+                drawJersey();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+/** จัดการการอัปโหลดฟอนต์ */
+function handleFontUpload(event) {
+    const file = event.target.files[0];
+    if (file && (file.name.endsWith('.ttf') || file.name.endsWith('.otf'))) {
+        const fontName = file.name.replace(/\.[^/.]+$/, "");
+        const fontUrl = URL.createObjectURL(file);
+        
+        const customFont = new FontFace(fontName, `url(${fontUrl})`);
+        customFont.load().then(function(loadedFont) {
+            document.fonts.add(loadedFont);
+            const select = document.getElementById('current-font');
+            const newOption = new Option(fontName, fontName);
+            select.add(newOption);
+            select.value = fontName;
+            jerseyState.customFont = fontName;
+            updateStateAndRedraw();
+        }).catch(error => {
+            console.error('Font loading failed:', error);
+            alert('ไม่สามารถโหลดไฟล์ฟอนต์ได้');
+        });
+    }
+}
+
+/** ฟังก์ชันดาวน์โหลด */
+function downloadJersey() {
+    const dataURL = canvas.toDataURL('image/png'); 
+    const a = document.createElement('a');
+    a.href = dataURL;
+    a.download = 'jersey-design.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
 
 // --- การจัดการโลโก้ (Drag-and-Drop) ---
 
 function getMousePos(e) {
-    // ... (โค้ดเดิม) ...
     const rect = canvas.getBoundingClientRect();
     let clientX, clientY;
     
@@ -269,23 +328,80 @@ function getMousePos(e) {
 // ตรวจสอบว่าคลิกโดนโลโก้ในส่วนด้านหน้าหรือไม่
 function isInsideLogo(pos) {
     const p = jerseyState.logoProps;
-    // ปรับพิกัดโลโก้ให้สัมพันธ์กับตำแหน่งที่มันถูกวาด (ด้านหน้า)
-    const adjustedX = p.x + (CANVAS_CENTER_X - SHIRT_CENTER_OFFSET);
+    // ปรับพิกัดโลโก้จริงบน Canvas
+    const adjustedX = p.x;
     
     return jerseyState.logo && 
            // ตรวจสอบว่าพิกัดเมาส์อยู่ในพื้นที่การวาดโลโก้หรือไม่
            pos.x > adjustedX && pos.x < adjustedX + p.width &&
            pos.y > p.y && pos.y < p.y + p.height &&
-           // ตรวจสอบให้แน่ใจว่าคลิกอยู่ในพื้นที่เสื้อด้านหน้าเท่านั้น
+           // ตรวจสอบให้แน่ใจว่าคลิกอยู่ในพื้นที่เสื้อด้านหน้าเท่านั้น (X < CANVAS_CENTER_X)
            pos.x < CANVAS_CENTER_X; 
 }
 
+function handleStart(e) {
+    e.preventDefault();
 
-// handleStart, handleMove, handleEnd logics เหมือนเดิม 
-// **NOTE:** โลโก้จะถูกลากได้เฉพาะในพื้นที่ด้านหน้าเท่านั้น (x < W/2) 
-// แต่ต้องปรับตำแหน่ง p.x/p.y ใน handleMove ให้สัมพันธ์กับพิกัดจริงของโลโก้
+    const mousePos = getMousePos(e);
+    if (isInsideLogo(mousePos)) {
+        jerseyState.logoProps.isDragging = true;
+        jerseyState.logoProps.offset.x = mousePos.x - jerseyState.logoProps.x;
+        jerseyState.logoProps.offset.y = mousePos.y - jerseyState.logoProps.y;
+        canvas.style.cursor = 'grabbing';
+    }
+}
 
-// ... (โค้ด handleStart, handleMove, handleEnd และ setupEventListeners เดิม) ...
+function handleMove(e) {
+    if (!jerseyState.logoProps.isDragging) return;
+    e.preventDefault();
+    
+    const mousePos = getMousePos(e);
+    const p = jerseyState.logoProps;
+
+    p.x = mousePos.x - p.offset.x;
+    p.y = mousePos.y - p.offset.y;
+
+    // จำกัดขอบเขตให้อยู่ในพื้นที่เสื้อด้านหน้า (เสริม)
+    const minX = FRONT_CENTER_X - 150; // ขอบซ้ายสุดของเสื้อ
+    const maxX = CANVAS_CENTER_X - p.width; // ขอบขวาสุดของพื้นที่ด้านหน้า
+    
+    p.x = Math.max(minX, Math.min(p.x, maxX));
+    
+    drawJersey();
+}
+
+function handleEnd() {
+    jerseyState.logoProps.isDragging = false;
+    canvas.style.cursor = 'default';
+}
+
+
+/** ตั้งค่า Event Listeners ทั้งหมด */
+function setupEventListeners() {
+    // ผูก Event Controls
+    document.querySelectorAll('#controls-area input, #controls-area select').forEach(control => {
+        if (control.type !== 'file') {
+            control.addEventListener('input', updateStateAndRedraw);
+        }
+    });
+
+    // Logo & Font Upload
+    document.getElementById('logo-upload')?.addEventListener('change', handleLogoUpload);
+    document.getElementById('font-upload')?.addEventListener('change', handleFontUpload);
+
+    // Download Button
+    document.getElementById('download-btn')?.addEventListener('click', downloadJersey);
+
+    // Canvas Drag-and-Drop (Mouse & Touch)
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('mouseup', handleEnd);
+    canvas.addEventListener('mouseout', handleEnd); 
+    
+    canvas.addEventListener('touchstart', handleStart);
+    canvas.addEventListener('touchmove', handleMove);
+    canvas.addEventListener('touchend', handleEnd);
+}
 
 // เริ่มต้นเว็บไซต์ (โค้ดนี้ต้องอยู่ท้ายไฟล์)
 setupEventListeners();
