@@ -14,6 +14,8 @@ const CANVAS_CENTER_X = W / 2;
 // ตำแหน่งศูนย์กลางของเสื้อแต่ละตัว (X=150 และ X=450)
 const SHIRT_CENTER_OFFSET = W / 4; 
 const BASE_Y = 50; 
+// ตำแหน่งศูนย์กลางของเสื้อด้านหน้า (X=150)
+const FRONT_CENTER_X = CANVAS_CENTER_X - SHIRT_CENTER_OFFSET; 
 
 // State Object (ปรับค่าเริ่มต้นสำหรับเสื้อโปโลลายกราฟิก)
 let jerseyState = {
@@ -29,11 +31,11 @@ let jerseyState = {
     textProps: {
         name: { size: 35, y: H - 320 },
         number: { size: 120, y: H - 250 },
-        x: 0 // X-coordinate ถูกกำหนดโดย OFFSET
+        x: 0 
     },
     logo: null,
-    // x, y ที่นี่คือตำแหน่งสัมพัทธ์ (Relative) ภายในพื้นที่เสื้อด้านหน้า
-    logoProps: { x: 50, y: 150, width: 100, height: 100, isDragging: false, offset: { x: 0, y: 0 } },
+    // x, y ที่นี่คือตำแหน่งสัมบูรณ์บน Canvas
+    logoProps: { x: FRONT_CENTER_X - 50, y: 150, width: 100, height: 100, isDragging: false, offset: { x: 0, y: 0 } },
     customFont: 'Arial'
 };
 
@@ -137,7 +139,9 @@ function drawCollar(ctx, style, color, offsetX) {
         ctx.lineTo(X + neckWidth / 2, neckTopY);
         ctx.closePath();
     } else if (style === 'polo') {
+        // วาดป้ายกระดุม (Placket)
         ctx.fillRect(X - 10, neckTopY, 20, 30); 
+        // วาดปกเสื้อ
         ctx.moveTo(X - 5, neckTopY);
         ctx.lineTo(X - 50, neckTopY - 10);
         ctx.lineTo(X - 50, neckTopY + 20);
@@ -177,12 +181,10 @@ function drawText(ctx, textState, textColor, fontName, textProps, offsetX, isBac
 }
 
 /** วาดโลโก้ (ปรับให้รับ offsetX และใช้ตำแหน่งที่ผู้ใช้กำหนด) */
-function drawLogo(ctx, logo, props, offsetX) {
+function drawLogo(ctx, logo, props) {
     if (logo) {
-        // ตำแหน่งโลโก้ถูกกำหนดโดยผู้ใช้เทียบกับจุดศูนย์กลางของเสื้อด้านหน้า (X=150)
-        // ถ้า props.x = 50, โลโก้จะถูกวาดที่ 150 - (150-50) = 50 
-        const logoDrawX = offsetX - SHIRT_CENTER_OFFSET + props.x;
-        ctx.drawImage(logo, logoDrawX, props.y, props.width, props.height);
+        // ตำแหน่งโลโก้ถูกเก็บแบบสัมบูรณ์ใน props.x และ props.y
+        ctx.drawImage(logo, props.x, props.y, props.width, props.height);
     }
 }
 
@@ -194,17 +196,17 @@ function drawJersey() {
     // ----------------------------------------------------
     // A. วาดมุมมองด้านหน้า (Left Half)
     // ----------------------------------------------------
-    const FRONT_CENTER_X = CANVAS_CENTER_X - SHIRT_CENTER_OFFSET; // X=150
+    const FRONT_CENTER_X_DRAW = CANVAS_CENTER_X - SHIRT_CENTER_OFFSET; // X=150
     
-    const frontBodyPath = drawBodyShape(ctx, jerseyState.colors.body, FRONT_CENTER_X);
-    drawPattern(ctx, jerseyState.pattern, jerseyState.colors.pattern, frontBodyPath, FRONT_CENTER_X);
-    drawCollar(ctx, jerseyState.collar, jerseyState.colors.collar, FRONT_CENTER_X);
+    const frontBodyPath = drawBodyShape(ctx, jerseyState.colors.body, FRONT_CENTER_X_DRAW);
+    drawPattern(ctx, jerseyState.pattern, jerseyState.colors.pattern, frontBodyPath, FRONT_CENTER_X_DRAW);
+    drawCollar(ctx, jerseyState.collar, jerseyState.colors.collar, FRONT_CENTER_X_DRAW);
     
     // วาดโลโก้ (ด้านหน้า)
-    drawLogo(ctx, jerseyState.logo, jerseyState.logoProps, FRONT_CENTER_X); 
+    drawLogo(ctx, jerseyState.logo, jerseyState.logoProps); 
     
     // วาดหมายเลขเล็กๆ ด้านหน้า (isBackView = false)
-    drawText(ctx, jerseyState.text, jerseyState.colors.text, jerseyState.customFont, jerseyState.textProps, FRONT_CENTER_X, false);
+    drawText(ctx, jerseyState.text, jerseyState.colors.text, jerseyState.customFont, jerseyState.textProps, FRONT_CENTER_X_DRAW, false);
 
 
     // ----------------------------------------------------
@@ -261,7 +263,7 @@ function handleLogoUpload(event) {
                 jerseyState.logo = img;
                 jerseyState.logoProps.width = 100; 
                 jerseyState.logoProps.height = (100 / img.width) * img.height; 
-                // ตั้งตำแหน่งเริ่มต้นให้อยู่ตรงกลางเสื้อด้านหน้า
+                // ตั้งตำแหน่งเริ่มต้นให้อยู่ตรงกลางเสื้อด้านหน้า (X=150)
                 jerseyState.logoProps.x = FRONT_CENTER_X - (jerseyState.logoProps.width / 2);
                 drawJersey();
             };
@@ -328,12 +330,10 @@ function getMousePos(e) {
 // ตรวจสอบว่าคลิกโดนโลโก้ในส่วนด้านหน้าหรือไม่
 function isInsideLogo(pos) {
     const p = jerseyState.logoProps;
-    // ปรับพิกัดโลโก้จริงบน Canvas
-    const adjustedX = p.x;
     
     return jerseyState.logo && 
            // ตรวจสอบว่าพิกัดเมาส์อยู่ในพื้นที่การวาดโลโก้หรือไม่
-           pos.x > adjustedX && pos.x < adjustedX + p.width &&
+           pos.x > p.x && pos.x < p.x + p.width &&
            pos.y > p.y && pos.y < p.y + p.height &&
            // ตรวจสอบให้แน่ใจว่าคลิกอยู่ในพื้นที่เสื้อด้านหน้าเท่านั้น (X < CANVAS_CENTER_X)
            pos.x < CANVAS_CENTER_X; 
@@ -361,8 +361,8 @@ function handleMove(e) {
     p.x = mousePos.x - p.offset.x;
     p.y = mousePos.y - p.offset.y;
 
-    // จำกัดขอบเขตให้อยู่ในพื้นที่เสื้อด้านหน้า (เสริม)
-    const minX = FRONT_CENTER_X - 150; // ขอบซ้ายสุดของเสื้อ
+    // จำกัดขอบเขตให้อยู่ในพื้นที่เสื้อด้านหน้า
+    const minX = FRONT_CENTER_X - 150; // ขอบซ้ายสุดของเสื้อ (150 - 150)
     const maxX = CANVAS_CENTER_X - p.width; // ขอบขวาสุดของพื้นที่ด้านหน้า
     
     p.x = Math.max(minX, Math.min(p.x, maxX));
