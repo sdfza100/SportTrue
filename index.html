@@ -7,79 +7,78 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="designer-container">
-        <div id="canvas-area">
-            <canvas id="jerseyCanvas" width="600" height="700"></canvas>
-            <p style="text-align: center; margin-top: 10px; font-style: italic;">(คลิกและลากโลโก้เพื่อย้ายตำแหน่ง)</p>
+
+    <div class="designer-container">
+        
+        <div class="preview-area">
+            <canvas id="jerseyCanvas" width="500" height="600"></canvas>
+            <p class="help-text">คลิกที่โลโก้เพื่อลาก-วาง หรือลากที่มุมขวาล่างเพื่อปรับขนาด</p>
         </div>
 
-        <div id="controls-area">
-            <h1>👕 ออกแบบเสื้อฟุตบอลของคุณ</h1>
+        <div class="controls-area">
+            <h1>Jersey Designer</h1>
 
-            <section>
-                <h3>1. ตัวเสื้อและคอเสื้อ</h3>
-                <label for="collar-style">คอเสื้อ:</label>
-                <select id="collar-style">
+            <fieldset>
+                <legend>ดีไซน์เสื้อ</legend>
+                <label for="collarSelect">คอเสื้อ:</label>
+                <select id="collarSelect">
                     <option value="round">คอกลม</option>
-                    <option value="vneck">คอวี</option>
+                    <option value="v-neck">คอวี</option>
                     <option value="polo">คอปกโปโล</option>
                     <option value="mandarin">คอปกจีน/ตั้ง</option>
                 </select>
 
-                <label for="pattern-style">ลายเสื้อ:</label>
-                <select id="pattern-style">
+                <label for="patternSelect">ลายเสื้อ:</label>
+                <select id="patternSelect">
                     <option value="solid">สีพื้น</option>
                     <option value="stripes">ลายทาง</option>
-                    <option value="checkered">ลายตาราง</option>
-                    <option value="graphic">ลายกราฟิก (Sublimation)</option>
+                    <option value="checkers">ลายตาราง</option>
+                    <option value="digital">ลายดิจิทัล</option>
                 </select>
-            </section>
-            
-            <section>
-                <h3>2. การเลือกสี</h3>
-                <div class="color-control"><label for="body-color">สีตัวเสื้อหลัก:</label><input type="color" id="body-color" value="#FFFFFF"></div>
-                <div class="color-control"><label for="pattern-color">สีลาย/ขอบ:</label><input type="color" id="pattern-color" value="#0056A8"></div>
-                <div class="color-control"><label for="collar-color">สีคอเสื้อ:</label><input type="color" id="collar-color" value="#CC0000"></div>
-            </section>
-            
-            <section>
-                <h3>3. ชื่อและหมายเลข</h3>
-                <input type="text" id="player-name" placeholder="ชื่อผู้เล่น (เช่น: GEMINI)" maxlength="15">
-                <input type="number" id="player-number" placeholder="หมายเลข (เช่น: 10)" max="99">
+            </fieldset>
 
-                <div class="color-control"><label for="text-color">สีตัวอักษร:</label><input type="color" id="text-color" value="#000000"></div>
+            <fieldset>
+                <legend>การเลือกสี</legend>
+                <label for="baseColor">สีตัวเสื้อ (หลัก):</label>
+                <input type="color" id="baseColor" value="#FFFFFF">
+                
+                <label for="patternColor">สีลายเสื้อ:</label>
+                <input type="color" id="patternColor" value="#FF0000">
 
-                <h4>ตำแหน่งและขนาดข้อความ (พิกเซล)</h4>
-                <label for="number-y">ตำแหน่งเบอร์ (Y):</label>
-                <input type="number" id="number-y" value="450" min="50" max="650"> 
-                
-                <label for="number-size">ขนาดเบอร์:</label>
-                <input type="number" id="number-size" value="120" min="10" max="200">
-                
-                <label for="name-y">ตำแหน่งชื่อ (Y):</label>
-                <input type="number" id="name-y" value="380" min="50" max="650">
+                <label for="collarColor">สีคอเสื้อ:</label>
+                <input type="color" id="collarColor" value="#000000">
+            </fieldset>
 
-                <label for="name-size">ขนาดชื่อ:</label>
-                <input type="number" id="name-size" value="35" min="10" max="100">
-                
-                <label for="font-upload">อัปโหลดฟอนต์ (.ttf/.otf):</label>
-                <input type="file" id="font-upload" accept=".ttf,.otf">
-                <select id="current-font">
+            <fieldset>
+                <legend>โลโก้ทีม (อัปโหลด)</legend>
+                <label for="logoUpload">อัปโหลดโลโก้ (PNG/JPG):</label>
+                <input type="file" id="logoUpload" accept="image/png, image/jpeg">
+            </fieldset>
+
+            <fieldset>
+                <legend>ชื่อและหมายเลข (ด้านหลัง)</legend>
+                <label for="playerName">ชื่อผู้เล่น:</label>
+                <input type="text" id="playerName" value="PLAYER" maxlength="20">
+
+                <label for="playerNumber">หมายเลข:</label>
+                <input type="text" id="playerNumber" value="10" maxlength="2">
+
+                <label for="textColor">สีตัวอักษร:</label>
+                <input type="color" id="textColor" value="#000000">
+
+                <label for="fontUpload">อัปโหลดฟอนต์ (.ttf, .otf):</label>
+                <input type="file" id="fontUpload" accept=".ttf, .otf, .woff, .woff2">
+
+                <label for="fontSelect">เลือกฟอนต์:</label>
+                <select id="fontSelect">
                     <option value="Arial">Arial (Default)</option>
-                    <option value="Verdana">Verdana</option>
+                    <option value="Verdana">Verdana (Default)</option>
                 </select>
-            </section>
+            </fieldset>
 
-            <section>
-                <h3>4. อัปโหลดโลโก้</h3>
-                <input type="file" id="logo-upload" accept="image/png, image/jpeg">
-            </section>
-
-            <button id="download-btn">⬇️ ดาวน์โหลด PNG</button>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
-
-
