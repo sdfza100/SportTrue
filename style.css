@@ -1,102 +1,113 @@
+/* ตั้งค่าพื้นฐาน */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
     margin: 0;
-    padding: 0;
-    background-color: #e9e9e9;
+    padding: 20px;
+    color: #333;
 }
 
-#designer-container {
+/* คอนเทนเนอร์หลัก (Flexbox) */
+.designer-container {
     display: flex;
+    flex-wrap: wrap; /* ให้ขึ้นบรรทัดใหม่ในจอมือถือ */
+    gap: 20px;
     max-width: 1200px;
-    margin: 20px auto;
-    background-color: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    min-height: 80vh;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
-#canvas-area {
-    flex: 2;
+/* ส่วนแสดงผล (Canvas) */
+.preview-area {
+    flex: 2; /* ให้กว้างกว่าส่วนควบคุม */
+    min-width: 320px;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    background-color: #f4f4f4;
+    align-items: center;
+    background-color: #f9f9f9;
 }
 
-#jerseyCanvas {
-    border: 1px solid #ccc;
-    cursor: default; 
-    touch-action: none; 
+canvas {
+    max-width: 100%;
+    height: auto;
+    border: 1px dashed #ccc;
+    cursor: default;
 }
 
-#controls-area {
-    flex: 1;
+.help-text {
+    font-size: 0.8rem;
+    color: #777;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* ส่วนควบคุม (Controls) */
+.controls-area {
+    flex: 1; /* ให้แคบกว่าส่วนแสดงผล */
+    min-width: 300px;
     padding: 20px;
-    background-color: #eee;
-    overflow-y: auto;
+    overflow-y: auto; /* สกรอลล์ได้ถ้าเนื้อหายาว */
+    max-height: 80vh;
 }
 
-#controls-area section {
+h1 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    color: #111;
+}
+
+fieldset {
+    border: 1px solid #ddd;
+    border-radius: 6px;
     margin-bottom: 20px;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
 }
 
-label, input[type="text"], input[type="number"], select {
+legend {
+    font-weight: bold;
+    padding: 0 10px;
+    font-size: 1.1rem;
+    color: #0056b3;
+}
+
+/* สไตล์ฟอร์ม */
+label {
     display: block;
-    margin-top: 10px;
+    margin-top: 15px;
     margin-bottom: 5px;
+    font-weight: 600;
 }
 
-input[type="text"], input[type="number"], select {
-    width: 95%;
-    padding: 8px;
+input[type="text"],
+select,
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box; /* สำคัญมาก */
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.color-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 5px;
-}
-
-.color-control input[type="color"] {
-    width: 50px;
-    height: 30px;
-    border: none;
-    padding: 0;
-}
-
-#download-btn {
+input[type="color"] {
     width: 100%;
-    padding: 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1em;
-    cursor: pointer;
-    margin-top: 20px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 
-/* Responsive Design */
-@media (max-width: 900px) {
-    #designer-container {
+/* ทำให้ยืดหยุ่นในจอมือถือ */
+@media (max-width: 768px) {
+    .designer-container {
         flex-direction: column;
     }
-    #canvas-area {
-        order: 1;
-    }
-    #controls-area {
-        order: 2;
-    }
-    #jerseyCanvas {
-        width: 90%; 
-        height: auto;
+    .controls-area {
+        max-height: none; /* ไม่จำกัดความสูงในมือถือ */
     }
 }
